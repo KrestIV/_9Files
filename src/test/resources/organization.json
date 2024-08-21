@@ -1,0 +1,20 @@
+{
+  "organizationId": "fb652eff-bbb6-4354-9c2d-cd44748af438",
+  "status": "ACTIVATED",
+  "timestamp": 1723063416,
+  "contractSigned": false,
+  "branchOffice": [
+    {
+      "id": "00101001",
+      "scope": "main"
+    },
+    {
+      "id": "00101002",
+      "scope": "accounting"
+    },
+    {
+      "id": "00101003",
+      "scope": "sales"
+    }
+  ]
+}
