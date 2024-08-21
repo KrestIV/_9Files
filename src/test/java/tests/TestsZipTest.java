@@ -3,7 +3,6 @@ package tests;
 import com.codeborne.pdftest.PDF;
 import com.codeborne.xlstest.XLS;
 import com.opencsv.CSVReader;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
@@ -11,43 +10,66 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class TestsZipTest {
     private ClassLoader classLoader = TestsZipTest.class.getClassLoader();
 
     @Test
-    public void zipFileShouldContainDataTest() throws Exception {
+    public void pdfInZipFileShouldContainDataTest() throws Exception {
         try (ZipInputStream zis = new ZipInputStream(
                 classLoader.getResourceAsStream("files.zip")
         )) {
             ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {
-                if (entry.getName().endsWith(".pdf")) checkPDF(zis);
-                else if (entry.getName().endsWith(".xlsx")) checkXLSX(zis);
-                else if (entry.getName().endsWith(".csv")) checkCSV(zis);
-                System.out.println(entry.getName());
+                if (entry.getName().endsWith(".pdf")) {
+                    PDF pdf = new PDF(zis);
+                    assertThat(pdf.text.length()).isGreaterThan(0);
+                    assertThat(pdf.numberOfPages).isEqualTo(1);
+                }
             }
         }
 
 
     }
-    private void checkPDF(ZipInputStream stream) throws Exception{
-        PDF pdf = new PDF(stream);
-        Assertions.assertTrue(pdf.text.length() > 0);
-        Assertions.assertEquals(1,pdf.numberOfPages);
+
+    @Test
+    public void xlsxInZipFileShouldContainDataTest() throws Exception {
+        try (ZipInputStream zis = new ZipInputStream(
+                classLoader.getResourceAsStream("files.zip")
+        )) {
+            ZipEntry entry;
+
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.getName().endsWith(".xlsx")) {
+                    XLS xls = new XLS(zis);
+                    String actualValueSpendName = xls.excel.getSheetAt(0).getRow(0).getCell(0).getStringCellValue();
+                    assertThat(actualValueSpendName).isEqualTo("Статья расходов");
+                    assertThat(xls.excel.getNumberOfSheets()).isGreaterThan(0);
+                }
+            }
+        }
+
+
     }
 
-    private void checkXLSX(ZipInputStream stream) throws Exception{
-        XLS xls = new XLS(stream);
-        Assertions.assertTrue(xls.excel.getNumberOfSheets()>0);
-        String actualValueSpendName = xls.excel.getSheetAt(0).getRow(0).getCell(0).getStringCellValue();
-        Assertions.assertEquals("Статья расходов",actualValueSpendName);
-    }
+    @Test
+    public void csvInZipFileShouldContainDataTest() throws Exception {
+        try (ZipInputStream zis = new ZipInputStream(
+                classLoader.getResourceAsStream("files.zip")
+        )) {
+            ZipEntry entry;
 
-    private void checkCSV(ZipInputStream stream) throws Exception{
-        CSVReader csvReader = new CSVReader(new InputStreamReader(stream));
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.getName().endsWith(".csv")) {
+                    CSVReader csvReader = new CSVReader(new InputStreamReader(zis));
+                    List<String[]> data = csvReader.readAll();
+                    assertThat(Integer.valueOf(data.get(1)[1])).isGreaterThan(0);
+                }
+            }
+        }
 
-        List<String[]> data = csvReader.readAll();
-        Assertions.assertTrue(Integer.valueOf(data.get(1)[1]) > 0);
+
     }
 }

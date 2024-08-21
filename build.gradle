@@ -21,7 +21,8 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-databind:2.17.2",
             "com.codeborne:pdf-test:1.5.0",
             "com.codeborne:xls-test:1.4.3",
-            "com.opencsv:opencsv:5.9"
+            "com.opencsv:opencsv:5.9",
+            "org.assertj:assertj-core:3.25.3"
     )
 }
 

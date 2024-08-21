@@ -2,10 +2,11 @@ package tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.Organization;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestJSONTest {
 
@@ -16,12 +17,12 @@ public class TestJSONTest {
         try (InputStream js = classLoader.getResourceAsStream("organization.json")) {
             ObjectMapper objectMapper = new ObjectMapper();
             Organization org = objectMapper.readValue(js, Organization.class);
-            Assertions.assertEquals("fb652eff-bbb6-4354-9c2d-cd44748af438", org.getOrganizationId());
-            Assertions.assertEquals("ACTIVATED", org.getStatus());
-            Assertions.assertEquals(1723063416, org.getTimestamp());
-            Assertions.assertEquals(false, org.isContractSigned());
-            Assertions.assertTrue(org.getBranchOffice().length == 3);
-            Assertions.assertEquals("main",org.getBranchOffice()[0].getScope());
+            assertThat(org.getOrganizationId()).isEqualTo("fb652eff-bbb6-4354-9c2d-cd44748af438");
+            assertThat(org.getStatus()).isEqualTo("ACTIVATED");
+            assertThat(org.getTimestamp()).isEqualTo(1723063416);
+            assertThat(org.isContractSigned()).isEqualTo(false);
+            assertThat(org.getBranchOffice().length).isEqualTo(3);
+            assertThat(org.getBranchOffice()[0].getScope()).isEqualTo("main");
         }
     }
 }
